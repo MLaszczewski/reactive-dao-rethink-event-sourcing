@@ -1,0 +1,15 @@
+{
+  "name": "reactive-dao-rethink-event-sourcing",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "reactive-dao": "git+ssh://git@github.com/ReactiveObserver/reactive-dao.git",
+    "rethinkdb": "^2.3.3"
+  }
+}
