@@ -51,11 +51,12 @@ function observableValue(request) {
 function simpleValue(requestCallback) {
   return {
     get: () => getValue( requestCallback('get').run() )
-    observe: () => observableValue( requestCallback('observe') )
+    observable: () => observableValue( requestCallback('observe') )
   }
 }
 
 module.exports = {
+  
   connnectToDatabase,
   command,
   getValue,
