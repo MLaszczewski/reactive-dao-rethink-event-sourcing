@@ -5,7 +5,9 @@ const db = require('./lib/db.js')
 const RethinkObservableValue = require('./lib/RethinkObservableValue.js')
 
 function command(service, command, parameters) {
-  return db().then(conn => {
+  let conn
+  return db().then(connection => {
+    conn = connection
     let cmd
     if(parameters) {
       cmd = parameters
@@ -17,9 +19,9 @@ function command(service, command, parameters) {
     return r.table( service + "_commands" ).insert(cmd).run(conn)
   }).then( result => {
     let commandId = result.generated_keys[0]
-    return r.table(table + '_commands').get(commandId).changes({ includeInitial: true  }).run(conn)
+    return r.table( service + '_commands' ).get(commandId).changes({ includeInitial: true  }).run(conn)
   }).then( changesStream => new Promise( (resolve, reject) => {
-    changeStream.each( (err, result) => {
+    changesStream.each( (err, result) => {
       if(err) {
         changesStream.close();
         reject(err)
