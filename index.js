@@ -3,6 +3,7 @@ const ReactiveDao = require("reactive-dao")
 
 const db = require('./lib/db.js')
 const RethinkObservableValue = require('./lib/RethinkObservableValue.js')
+const RethinkObservableList = require('./lib/RethinkObservableList.js')
 
 function command(service, command, parameters) {
   let conn
