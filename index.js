@@ -44,14 +44,19 @@ function command(service, command, parameters) {
 }
 
 function getValue(requestPromise) {
-  return Promise.all([db(), requestPromise]).then(([conn, request]) => request.run(conn))
+  return Promise.all([db(), requestPromise]).then(([conn, request]) => request.run(conn)).then(
+    result => {
+      console.log("RES", result)
+      return result
+    }
+  )
 }
 function observableValue(requestPromise) {
   return new RethinkObservableValue(requestPromise)
 }
 function simpleValue(requestCallback) {
   return {
-    get: (...args) => getValue( requestCallback('get', ...args).run() ),
+    get: (...args) => getValue( requestCallback('get', ...args) ),
     observable: (...args) => observableValue( requestCallback('observe', ...args) )
   }
 }
@@ -64,7 +69,7 @@ function observableList(requestPromise, idField) {
 }
 function simpleList(requestCallback, idField) {
   return {
-    get: (...args) => getList( requestCallback('get', ...args).run() ),
+    get: (...args) => getList( requestCallback('get', ...args) ),
     observable: (...args) => observableList( requestCallback('observe', ...args), idField )
   }
 }
