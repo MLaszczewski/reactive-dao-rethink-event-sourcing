@@ -45,15 +45,26 @@ function command(service, command, parameters) {
 function getValue(requestPromise) {
   return Promise.all([db(), requestPromise]).then(([conn, request]) => request.run(conn))
 }
-
-function observableValue(request) {
-  return new RethinkObservableValue(request)
+function observableValue(requestPromise) {
+  return new RethinkObservableValue(requestPromise)
 }
-
 function simpleValue(requestCallback) {
   return {
     get: (...args) => getValue( requestCallback('get', ...args).run() ),
     observable: (...args) => observableValue( requestCallback('observe', ...args) )
+  }
+}
+
+function getList(requestPromise) {
+  return Promise.all([db(), requestPromise]).then(([conn, request]) => request.run(conn))
+}
+function observableList(requestPromise, idField) {
+  return new RethinkObservableList(requestPromise)
+}
+function simpleList(requestCallback, idField) {
+  return {
+    get: (...args) => getList( requestCallback('get', ...args).run() ),
+    observable: (...args) => observableList( requestCallback('observe', ...args), idField )
   }
 }
 
@@ -62,8 +73,13 @@ module.exports = {
   
   connnectToDatabase: db,
   command,
+
   getValue,
   observableValue,
-  simpleValue
+  simpleValue,
+
+  getList,
+  observableList,
+  simpleList
 
 }
