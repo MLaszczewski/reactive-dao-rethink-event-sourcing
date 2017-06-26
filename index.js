@@ -42,8 +42,8 @@ function command(service, command, parameters) {
   }))
 }
 
-function getValue(request) {
-  return db().then(conn => request.run(conn))
+function getValue(requestPromise) {
+  return Promise.all([db(), requestPromise]).then(([conn, request]) => request.run(conn))
 }
 
 function observableValue(request) {
@@ -52,10 +52,11 @@ function observableValue(request) {
 
 function simpleValue(requestCallback) {
   return {
-    get: () => getValue( requestCallback('get').run() ),
-    observable: () => observableValue( requestCallback('observe') )
+    get: (...args) => getValue( requestCallback('get', ...args).run() ),
+    observable: (...args) => observableValue( requestCallback('observe', ...args) )
   }
 }
+
 
 module.exports = {
   
