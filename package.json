@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "reactive-dao": "git+ssh://git@github.com/ReactiveObserver/reactive-dao.git",
+    "reactive-dao": "git+https://github.com/ReactiveObserver/reactive-dao.git",
     "rethinkdb": "^2.3.3"
   }
 }
