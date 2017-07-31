@@ -17,6 +17,7 @@ function command(service, command, parameters) {
       cmd = command
     }
     cmd.state = "new"
+    cmd.timestamp = new Date()
     return r.table( service + "_commands" ).insert(cmd).run(conn)
   }).then( result => {
     let commandId = result.generated_keys[0]
