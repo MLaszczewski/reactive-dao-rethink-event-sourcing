@@ -78,7 +78,7 @@ function simpleList(requestCallback, idField) {
 
 module.exports = {
   
-  connnectToDatabase: db,
+  connectToDatabase: db,
   command,
 
   getValue,
