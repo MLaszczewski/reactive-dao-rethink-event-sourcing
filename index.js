@@ -44,6 +44,11 @@ function command(service, command, parameters) {
   }))
 }
 
+function promiseMap(promise, fn) {
+  if(promise.then) return promise.then(fn)
+  return fn(promise)
+}
+
 function getValue(requestPromise) {
   return Promise.all([db(), requestPromise]).then(([conn, request]) => request.run(conn)).then(
     result => {
@@ -58,7 +63,9 @@ function observableValue(requestPromise) {
 function simpleValue(requestCallback) {
   return {
     get: (...args) => getValue( requestCallback('get', ...args) ),
-    observable: (...args) => observableValue( requestCallback('observe', ...args) )
+    observable: (...args) => observableValue(
+      promiseMap(requestCallback('observe', ...args), req => req.changes({ includeInitial: true }))
+    )
   }
 }
 
@@ -71,7 +78,10 @@ function observableList(requestPromise, idField) {
 function simpleList(requestCallback, idField) {
   return {
     get: (...args) => getList( requestCallback('get', ...args) ),
-    observable: (...args) => observableList( requestCallback('observe', ...args), idField )
+    observable: (...args) => observableList(
+      promiseMap(requestCallback('observe', ...args), req => req.changes({ includeInitial: true, includeStates: true })),
+      idField
+    )
   }
 }
 
