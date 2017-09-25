@@ -72,15 +72,15 @@ function simpleValue(requestCallback) {
 function getList(requestPromise) {
   return Promise.all([db(), requestPromise]).then(([conn, request]) => request.run(conn))
 }
-function observableList(requestPromise, idField) {
+function observableList(requestPromise, idField, maxLength) {
   return new RethinkObservableList(requestPromise)
 }
-function simpleList(requestCallback, idField) {
+function simpleList(requestCallback, idField, maxLength) {
   return {
     get: (...args) => getList( requestCallback('get', ...args) ),
     observable: (...args) => observableList(
       promiseMap(requestCallback('observe', ...args), req => req.changes({ includeInitial: true, includeStates: true })),
-      idField
+      idField, maxLength
     )
   }
 }
