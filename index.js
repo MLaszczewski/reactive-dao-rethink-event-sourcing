@@ -73,7 +73,7 @@ function getList(requestPromise) {
   return Promise.all([db(), requestPromise]).then(([conn, request]) => request.run(conn))
 }
 function observableList(requestPromise, idField, maxLength) {
-  return new RethinkObservableList(requestPromise)
+  return new RethinkObservableList(requestPromise, idField, maxLength)
 }
 function simpleList(requestCallback, idField, maxLength) {
   return {
