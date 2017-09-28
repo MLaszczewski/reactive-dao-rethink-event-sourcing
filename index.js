@@ -44,6 +44,15 @@ function command(service, command, parameters) {
   }))
 }
 
+let enhancements = {
+  then(fun) {
+    return {
+      get: (...args) => this.get(...args).then(fun)
+      observable: (...args) => this.observable(...args).then(fun)
+    }
+  }
+}
+
 function promiseMap(promise, fn) {
   if(promise.then) return promise.then(fn)
   return fn(promise)
@@ -61,12 +70,12 @@ function observableValue(requestPromise) {
   return new RethinkObservableValue(requestPromise)
 }
 function simpleValue(requestCallback) {
-  return {
+  return Object.create(enhancements, {
     get: (...args) => getValue( requestCallback('get', ...args) ),
     observable: (...args) => observableValue(
       promiseMap(requestCallback('observe', ...args), req => req.changes({ includeInitial: true }))
     )
-  }
+  })
 }
 
 function getList(requestPromise) {
@@ -76,13 +85,13 @@ function observableList(requestPromise, idField, maxLength) {
   return new RethinkObservableList(requestPromise, idField, maxLength)
 }
 function simpleList(requestCallback, idField, maxLength) {
-  return {
+  return Object.create(enhancements,{
     get: (...args) => getList( requestCallback('get', ...args) ),
     observable: (...args) => observableList(
       promiseMap(requestCallback('observe', ...args), req => req.changes({ includeInitial: true, includeStates: true })),
       idField, maxLength
     )
-  }
+  })
 }
 
 
