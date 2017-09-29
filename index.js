@@ -49,10 +49,10 @@ class SimpleEndpoint {
     this.get = get
     this.observable = observable
   }
-  then(fun) {
+  next(fun) {
     return new SimpleEndpoint({
       get: (...args) => this.get(...args).then(fun),
-      observable: (...args) => this.observable(...args).then(fun)
+      observable: (...args) => this.observable(...args).next(fun)
     })
   }
 }
