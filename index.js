@@ -44,12 +44,16 @@ function command(service, command, parameters) {
   }))
 }
 
-let enhancements = {
+class SimpleEndpoint {
+  constructor({ get, observable }) {
+    this.get = get
+    this.observable = observable
+  }
   then(fun) {
-    return {
-      get: (...args) => this.get(...args).then(fun)
+    return new SimpleEndpoint({
+      get: (...args) => this.get(...args).then(fun),
       observable: (...args) => this.observable(...args).then(fun)
-    }
+    })
   }
 }
 
@@ -70,7 +74,7 @@ function observableValue(requestPromise) {
   return new RethinkObservableValue(requestPromise)
 }
 function simpleValue(requestCallback) {
-  return Object.create(enhancements, {
+  return new SimpleEndpoint({
     get: (...args) => getValue( requestCallback('get', ...args) ),
     observable: (...args) => observableValue(
       promiseMap(requestCallback('observe', ...args), req => req.changes({ includeInitial: true }))
@@ -85,7 +89,7 @@ function observableList(requestPromise, idField, maxLength) {
   return new RethinkObservableList(requestPromise, idField, maxLength)
 }
 function simpleList(requestCallback, idField, maxLength) {
-  return Object.create(enhancements,{
+  return new SimpleEndpoint({
     get: (...args) => getList( requestCallback('get', ...args) ),
     observable: (...args) => observableList(
       promiseMap(requestCallback('observe', ...args), req => req.changes({ includeInitial: true, includeStates: true })),
@@ -106,6 +110,7 @@ module.exports = {
 
   getList,
   observableList,
-  simpleList
+  simpleList,
+  SimpleEndpoint
 
 }
